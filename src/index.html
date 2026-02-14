@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>gesslar.dev</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #1a1a2e;
+      cursor: none;
+    }
+
+    .emoji {
+      position: absolute;
+      font-size: 48px;
+      line-height: 1;
+      user-select: none;
+      transition: none;
+    }
+
+    #toilet {
+      z-index: 2;
+    }
+
+    #poop {
+      z-index: 1;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="toilet" class="emoji">🚽</div>
+  <div id="poop" class="emoji">💩</div>
+
+  <script>
+    const toilet = document.getElementById('toilet');
+    const poop = document.getElementById('poop');
+
+    const padding = 30;
+
+    const state = {
+      toilet: { x: window.innerWidth / 2, y: window.innerHeight / 2, vx: 0, vy: 0 },
+      poop: { x: 100, y: 100, angle: 0 },
+    };
+
+    const toiletSpeed = 5;
+    const poopSpeed = 2.8;
+    const fleeDistance = 200;
+    const jitter = 0.3;
+
+    function clamp(val, min, max) {
+      return Math.max(min, Math.min(max, val));
+    }
+
+    function distance(a, b) {
+      return Math.hypot(a.x - b.x, a.y - b.y);
+    }
+
+    function angleBetween(from, to) {
+      return Math.atan2(to.y - from.y, to.x - from.x);
+    }
+
+    function updateToilet() {
+      const t = state.toilet;
+      const p = state.poop;
+      const dist = distance(t, p);
+
+      if (dist < fleeDistance) {
+        const away = angleBetween(p, t);
+        t.vx += Math.cos(away) * toiletSpeed * 0.3;
+        t.vy += Math.sin(away) * toiletSpeed * 0.3;
+      }
+
+      // random wandering
+      t.vx += (Math.random() - 0.5) * jitter;
+      t.vy += (Math.random() - 0.5) * jitter;
+
+      // damping
+      t.vx *= 0.95;
+      t.vy *= 0.95;
+
+      // speed cap
+      const speed = Math.hypot(t.vx, t.vy);
+      if (speed > toiletSpeed) {
+        t.vx = (t.vx / speed) * toiletSpeed;
+        t.vy = (t.vy / speed) * toiletSpeed;
+      }
+
+      t.x = clamp(t.x + t.vx, padding, window.innerWidth - padding);
+      t.y = clamp(t.y + t.vy, padding, window.innerHeight - padding);
+
+      // bounce off walls
+      if (t.x <= padding || t.x >= window.innerWidth - padding) t.vx *= -1;
+      if (t.y <= padding || t.y >= window.innerHeight - padding) t.vy *= -1;
+    }
+
+    function updatePoop() {
+      const p = state.poop;
+      const t = state.toilet;
+
+      const targetAngle = angleBetween(p, t);
+
+      // smooth turning
+      let diff = targetAngle - p.angle;
+      while (diff > Math.PI) diff -= 2 * Math.PI;
+      while (diff < -Math.PI) diff += 2 * Math.PI;
+      p.angle += diff * 0.08;
+
+      p.x = clamp(p.x + Math.cos(p.angle) * poopSpeed, padding, window.innerWidth - padding);
+      p.y = clamp(p.y + Math.sin(p.angle) * poopSpeed, padding, window.innerHeight - padding);
+    }
+
+    function render() {
+      toilet.style.transform = `translate(${state.toilet.x - 24}px, ${state.toilet.y - 24}px)`;
+
+      const wobble = Math.sin(Date.now() / 100) * 10;
+      poop.style.transform = `translate(${state.poop.x - 24}px, ${state.poop.y - 24}px) rotate(${wobble}deg)`;
+    }
+
+    function loop() {
+      updateToilet();
+      updatePoop();
+      render();
+      requestAnimationFrame(loop);
+    }
+
+    loop();
+  </script>
+</body>
+
+</html>
