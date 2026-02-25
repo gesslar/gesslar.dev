@@ -2,6 +2,10 @@
   "name": "gesslar.dev",
   "description": "Fuck off.",
   "author": {
-    "name": "gesslar"
+    "name": "gesslar",
+    "url": "https://zombo.com/"
+  },
+  "scripts": {
+    "deploy": "gh workflow run rsync-deploy.yml"
   }
 }
