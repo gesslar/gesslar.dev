@@ -4,9 +4,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>A Very Serious and Professional Website for a Very Serious and Professional Dev made by a Very Serious and
-    Professional Dev. I'm not kidding. This is the label on the tin. If this sounds incredible to you, then I genuinely
-    have little recourse but to grant you welcome.</title>
+  <title>
+    A Very Serious and Professional Website for a Very Serious and Professional
+    Dev made by a Very Serious and Professional Dev. I'm not kidding. This is
+    the label on the tin. If this sounds incredible to you, then I genuinely
+    have little recourse but to grant you welcome.
+  </title>
   <style>
     * {
       margin: 0;
@@ -22,7 +25,6 @@
       overflow: hidden;
       position: relative;
       background: #1a1a2e;
-      cursor: none;
     }
 
     .emoji {
@@ -41,16 +43,6 @@
       z-index: 1;
     }
 
-    #cursor {
-      position: fixed;
-      font-size: 24px;
-      line-height: 1;
-      pointer-events: none;
-      user-select: none;
-      z-index: 10;
-      transform: translate(-50%, -50%);
-    }
-
     .emoji.serious {
       font-size: 18px;
       font-weight: 900;
@@ -63,14 +55,15 @@
 </head>
 
 <body>
-  <div id="cursor">🧐</div>
   <div id="toilet" class="emoji">🚽</div>
   <div id="poop" class="emoji">💩</div>
 
   <script>
-    const cursor = document.getElementById('cursor');
+    const notSoSeriouses = ["🫠", "😈", "👄", "🫦", "😂"]
+    const serious = "🧐"
     const toilet = document.getElementById('toilet');
     const poop = document.getElementById('poop');
+    const body = document.body
 
     const W = () => document.documentElement.clientWidth;
     const H = () => document.documentElement.clientHeight;
@@ -167,10 +160,7 @@
       requestAnimationFrame(loop);
     }
 
-    document.addEventListener('mousemove', e => {
-      cursor.style.left = e.clientX + 'px';
-      cursor.style.top = e.clientY + 'px';
-    });
+    const emojiHuggingString = "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='48' viewport='0 0 100 100' style='fill:black;font-size:24px;'><text y='50%'>{{RIGHT_HERE_OFFICER}}</text></svg>\") 16 0, auto"
 
     function setSerious(val) {
       if (val) {
@@ -178,13 +168,13 @@
         toilet.classList.add('serious');
         poop.textContent = 'SERIOUS';
         poop.classList.add('serious');
-        cursor.textContent = '🧐';
+        body.style.cursor = emojiHuggingString.replace("{{RIGHT_HERE_OFFICER}}", serious)
       } else {
         toilet.textContent = '🚽';
         toilet.classList.remove('serious');
         poop.textContent = '💩';
         poop.classList.remove('serious');
-        cursor.textContent = '🤣';
+        body.style.cursor = emojiHuggingString.replace("{{RIGHT_HERE_OFFICER}}", notSoSeriouses[Math.floor(Math.random() * notSoSeriouses.length)])
       }
     }
 
